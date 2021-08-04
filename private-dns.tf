@@ -1,3 +1,5 @@
+// The code samples here are provide "AS IS". Oracle makes no other warranties, express or implied, and hereby disclaims all implied warranties, including any warranty of merchantability and warranty of fitness for a particular purpose.
+
 data "oci_core_vcn_dns_resolver_association" "private_dns_resolver_association" {
   vcn_id = module.vcn.vcn_id
 }
