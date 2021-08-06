@@ -2,6 +2,22 @@
 // Licensed under the Mozilla Public License v2.0
 //
 
+variable "flex_shape" {
+  type = bool
+  default = false
+}
+
+variable "flex_config" {
+  type = object({
+    ocpus = number,
+    memory_in_gbs = number
+  })
+  default = {
+    memory_in_gbs = 4
+    ocpus = 1
+  }
+}
+
 resource "oci_core_instance" "ubuntu_instance" {
   count = 1
   # Required
@@ -9,10 +25,14 @@ resource "oci_core_instance" "ubuntu_instance" {
   compartment_id      = oci_identity_compartment.tf-compartment.id
   shape               = "VM.Standard.E4.Flex"
 
-  shape_config {
-    ocpus         = 1
-    memory_in_gbs = 4
+  dynamic "shape_config" {
+    for_each = var.flex_shape == true ? [var.flex_config] : []
+    content {
+      ocpus = shape_config.value["ocpus"]
+      memory_in_gbs = shape_config.value["memory_in_gbs"]
+    }
   }
+
   source_details {
     source_id   = "ocid1.image.oc1.iad.aaaaaaaafjeywk4pmink5lmvhbfwzshlb4skyh74zd3qbberxex4fdkpg62a"
     source_type = "image"
