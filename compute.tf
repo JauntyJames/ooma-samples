@@ -2,9 +2,9 @@
 // Licensed under the Mozilla Public License v2.0
 //
 
-variable "flex_shape" {
-  type = bool
-  default = false
+variable "instance_shape" {
+  type = string
+  default = "VM.Standard.E4.Flex"
 }
 
 variable "flex_config" {
@@ -23,10 +23,10 @@ resource "oci_core_instance" "ubuntu_instance" {
   # Required
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
   compartment_id      = oci_identity_compartment.tf-compartment.id
-  shape               = "VM.Standard.E4.Flex"
+  shape               = var.instance_shape
 
   dynamic "shape_config" {
-    for_each = var.flex_shape == true ? [var.flex_config] : []
+    for_each = length(regexall("Flex", var.instance_shape)) > 0 ? [var.flex_config] : []
     content {
       ocpus = shape_config.value["ocpus"]
       memory_in_gbs = shape_config.value["memory_in_gbs"]
